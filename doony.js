@@ -596,6 +596,14 @@
         button.innerHTML = "Build Now";
         $(button).click(function() {
             var jobUrl = getRootJobUrl(window.location.pathname);
+            $.getJSON(jobUrl + 'json?tree=property[parameterDefinitions[defaultParameterValue[*]]]', function(data) {
+              if (JSON.stringify(data) !== "{}" &&
+                 'defaultParameterValue' in data &&
+                 data.defaultParameterValue !== null
+               ) {
+                    showButterBar("Parameterized builds are currently not supported by this button", Alert.ERROR);   
+               }
+            else
             // The build post endpoint doesn't tell you the number of the next
             // build, so get it before we create a build.
             $.getJSON(jobUrl + 'api/json?depth=1&tree=nextBuildNumber,lastBuild[building]', function(data) {
@@ -621,6 +629,7 @@
                     }
                 });
             });
+          });
         });
 
         $(document).on('click', '#doony-clear-build', function(e) {
